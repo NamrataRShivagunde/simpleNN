@@ -90,6 +90,8 @@ def main(args):
 
     # Initialize WandB watch for gradients
     wandb.watch(model, log="all")
+    
+    print("add_lora = ", add_lora)
 
     for epoch in range(num_epochs):
         model.train()
@@ -102,8 +104,6 @@ def main(args):
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
-
-            print("add_lora = ", add_lora)
            
             if add_lora:
                 wandb.log({"-WaWb_embedding_layer": -((model.embedding.lora_A).T @ (model.embedding.lora_B).T).norm().item() })
