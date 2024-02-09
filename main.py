@@ -69,7 +69,7 @@ def main(args):
     test_loader = DataLoader(dataset=test_data, batch_size=batch_size, shuffle=False)
 
     # Instantiate the model, loss function, and optimizer
-    model = SimpleNet(vocab_size, hidden_size, output_size)
+    model = SimpleNet(vocab_size, hidden_size, output_size, add_lora)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
