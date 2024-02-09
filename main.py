@@ -103,7 +103,14 @@ def main(args):
             loss.backward()
             optimizer.step()
 
+            print("add_lora = ", add_lora)
+           
             if add_lora:
+                wandb.log({"-WaWb_embedding_layer": -((model.embedding.lora_A).T @ (model.embedding.lora_B).T).norm().item() })
+                wandb.log({"-WaWb_fc1_layer": -((model.fc1.lora_A).T @ (model.fc1.lora_B).T).norm().item() })
+                wandb.log({"-WaWb_fc2_layer": -((model.fc1.lora_A).T @ (model.fc1.lora_B).T).norm().item() })
+                wandb.log({"embedding_grad": model.embedding.weight.grad.norm().item(), "fc1_grad": model.fc1.weight.grad.norm().item(), "fc2_grad": model.fc2.weight.grad.norm().item()})
+            else:
                 # Accessing the embedding matrix and its update in Adam optimizer
                 embedding_grad = optimizer.state[model.fc1.weight]['exp_avg']  # Gradient (m1)
                 embedding_update = optimizer.state[model.fc1.weight]['exp_avg_sq']  # Update (m2)
@@ -121,14 +128,10 @@ def main(args):
                 fc2_update = optimizer.state[model.fc2.weight]['exp_avg_sq']  # Update (m2)
                 fc2_update = -optimizer.param_groups[0]['lr'] * fc2_grad / (torch.sqrt(fc2_update) + 1e-8)
                 wandb.log({"-Adam(fc2_grad)": fc2_update.norm().item()})
-            else:
-                wandb.log({"-WaWb_embedding_layer": -((model.embedding.lora_A).T @ (model.embedding.lora_B).T).norm().item() })
-                wandb.log({"-WaWb_fc1_layer": -((model.fc1.lora_A).T @ (model.fc1.lora_B).T).norm().item() })
-                wandb.log({"-WaWb_fc2_layer": -((model.fc1.lora_A).T @ (model.fc1.lora_B).T).norm().item() })
 
             # Log loss and gradients to wandb after each epoch
             wandb.log({"train_loss": loss.item()})
-            wandb.log({"embedding_grad": model.embedding.weight.grad.norm().item(), "fc1_grad": model.fc1.weight.grad.norm().item(), "fc2_grad": model.fc2.weight.grad.norm().item()})
+       
         print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
 
     # Evaluation
