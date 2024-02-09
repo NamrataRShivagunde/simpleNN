@@ -18,10 +18,8 @@ do
             do
                 for num_epoch in "${num_epochs[@]}"
                 do
-                   
-                    echo "Running script with hyperparameters: hidden_size=$hidden_size, output_size=$output_size, learning_rate=$learning_rate, batch_size=$batch_size, num_epochs=$num_epoch
-                    python main.py --hidden_size $hidden_size --output_size $output_size --learning_rate $learning_rate --batch_size $batch_size --num_epochs $num_epoch
-                    
+                    echo "Running script with hyperparameters: hidden_size=$hidden_size, output_size=$output_size, learning_rate=$learning_rate, batch_size=$batch_size, num_epochs=$num_epoch"
+                    python main.py --hidden_size $hidden_size --output_size $output_size --learning_rate $learning_rate --batch_size $batch_size --num_epochs $num_epoch    
                 done
             done
         done
