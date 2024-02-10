@@ -106,7 +106,7 @@ def main(args):
            
             if add_lora:
                 optimizer.step()
-                wandb.log({"-WaWb_embedding_layer": -((model.embedding.lora_B @ model.embedding.lora_A).transpose(0,1) * 1/16).norm().item()})
+                wandb.log({"WaWb_embedding_layer": ((model.embedding.lora_B @ model.embedding.lora_A).transpose(0,1) * 1/16).norm().item()})
                 # wandb.log({"-WaWb_embedding_layer": -((model.embedding.lora_A).T @ (model.embedding.lora_B).T).norm().item()})
                 wandb.log({"-WaWb_fc1_layer": -((model.fc1.lora_A).T @ (model.fc1.lora_B).T).norm().item()})
                 wandb.log({"-WaWb_fc2_layer": -((model.fc1.lora_A).T @ (model.fc1.lora_B).T).norm().item()})
@@ -117,7 +117,7 @@ def main(args):
                 # Calculate the update without modifying the original parameters
                 embedding_update = optimizer.param_groups[0]['lr'] * embedding_grad / (torch.sqrt(embedding_update) + 1e-8)
                 # Logging the update without applying it to the parameters
-                wandb.log({"-Adam(embedding_grad)": -embedding_update.norm().item()})
+                wandb.log({"Adam(embedding_grad)": embedding_update.norm().item()})
 
                 fc1_grad = optimizer.state[model.fc1.weight]['exp_avg']  # Gradient (m1)
                 fc1_update = optimizer.state[model.fc1.weight]['exp_avg_sq']  # Update (m2)
