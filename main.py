@@ -106,30 +106,46 @@ def main(args):
            
             if add_lora:
                 optimizer.step()
-                wandb.log({"WaWb_embedding_layer": ((model.embedding.lora_B @ model.embedding.lora_A).transpose(0,1) * 1/16).norm().item()})
-                # wandb.log({"-WaWb_embedding_layer": -((model.embedding.lora_A).T @ (model.embedding.lora_B).T).norm().item()})
-                wandb.log({"-WaWb_fc1_layer": -((model.fc1.lora_A).T @ (model.fc1.lora_B).T).norm().item()})
-                wandb.log({"-WaWb_fc2_layer": -((model.fc1.lora_A).T @ (model.fc1.lora_B).T).norm().item()})
+                print(optimizer)
+                wandb.log({"WaWb_embedding_layer": ((model.embedding.lora_A).T @ (model.embedding.lora_B).T * 1/16).norm().item()})
+                # wandb.log({"WaWb_fc1_layer": ((model.fc1.lora_A).T @ (model.fc1.lora_B).T).norm().item()})
+                # wandb.log({"WaWb_fc2_layer": ((model.fc1.lora_A).T @ (model.fc1.lora_B).T).norm().item()})
+                # Calculate the norms of Wa and Wb
+                norm_Wa = torch.norm(model.embedding.lora_A)
+                norm_Wb = torch.norm(model.embedding.lora_B)
+
+                # Log the norms of Wa and Wb
+                wandb.log({"norm_Wa": norm_Wa.item()})
+                wandb.log({"norm_Wb": norm_Wb.item()})
+
+                # Calculate the updates for Wa and Wb
+                update_Wa = optimizer.param_groups[0]['lr'] * optimizer.state[model.embedding.lora_A]['exp_avg'] / (torch.sqrt(optimizer.state[model.embedding.lora_A]['exp_avg_sq']) + 1e-8)
+                update_Wb = optimizer.param_groups[0]['lr'] * optimizer.state[model.embedding.lora_B]['exp_avg'] / (torch.sqrt(optimizer.state[model.embedding.lora_B]['exp_avg_sq']) + 1e-8)
+
+                # Log the norms of updates for Wa and Wb
+                wandb.log({"update_Wa": update_Wa.norm().item()})
+                wandb.log({"update_Wb": update_Wb.norm().item()})
+
             else:
                 optimizer.step()
                 # Accessing the embedding matrix and its update in Adam optimizer
-                embedding_grad = optimizer.state[model.fc1.weight]['exp_avg']  # Gradient (m1)
-                embedding_update = optimizer.state[model.fc1.weight]['exp_avg_sq']  # Update (m2)
+                first_moment = optimizer.state[model.fc1.weight]['exp_avg']  # Gradient (m1)
+                second_moment = optimizer.state[model.fc1.weight]['exp_avg_sq']  # Update (m2)
                 # Calculate the update without modifying the original parameters
-                embedding_update = optimizer.param_groups[0]['lr'] * embedding_grad / (torch.sqrt(embedding_update) + 1e-8)
+                embedding_update = optimizer.param_groups[0]['lr'] * first_moment / (torch.sqrt(second_moment) + 1e-8)
                 # Logging the update without applying it to the parameters
                 wandb.log({"Adam(embedding_grad)": embedding_update.norm().item()})
 
-                fc1_grad = optimizer.state[model.fc1.weight]['exp_avg']  # Gradient (m1)
-                fc1_update = optimizer.state[model.fc1.weight]['exp_avg_sq']  # Update (m2)
-                fc1_update = optimizer.param_groups[0]['lr'] * fc1_grad / (torch.sqrt(fc1_update) + 1e-8)
-                wandb.log({"-Adam(fc1_grad)": -fc1_update.norm().item()})
+                # first_moment = optimizer.state[model.fc1.weight]['exp_avg']  # Gradient (m1)
+                # second_moment = optimizer.state[model.fc1.weight]['exp_avg_sq']  # Update (m2)
+                # fc1_update = optimizer.param_groups[0]['lr'] * first_moment / (torch.sqrt(second_moment) + 1e-8)
+                # wandb.log({"Adam(fc1_grad)": fc1_update.norm().item()})
 
-                fc2_grad = optimizer.state[model.fc2.weight]['exp_avg']  # Gradient (m1)
-                fc2_update = optimizer.state[model.fc2.weight]['exp_avg_sq']  # Update (m2)
-                fc2_update = optimizer.param_groups[0]['lr'] * fc2_grad / (torch.sqrt(fc2_update) + 1e-8)
-                wandb.log({"-Adam(fc2_grad)": -fc2_update.norm().item()})
-                # wandb.log({"embedding_grad": model.embedding.weight.grad.norm().item(), "fc1_grad": model.fc1.weight.grad.norm().item(), "fc2_grad": model.fc2.weight.grad.norm().item()})
+                # first_moment = optimizer.state[model.fc2.weight]['exp_avg']  # Gradient (m1)
+                # second_moment = optimizer.state[model.fc2.weight]['exp_avg_sq']  # Update (m2)
+                # fc2_update = optimizer.param_groups[0]['lr'] * first_moment / (torch.sqrt(second_moment) + 1e-8)
+                # wandb.log({"Adam(fc2_grad)": fc2_update.norm().item()})
+                # # wandb.log({"embedding_grad": model.embedding.weight.grad.norm().item(), "fc1_grad": model.fc1.weight.grad.norm().item(), "fc2_grad": model.fc2.weight.grad.norm().item()})
             
            
             # Log loss and gradients to wandb after each epoch
