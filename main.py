@@ -13,7 +13,7 @@ import loralib as lora
 from torch.optim.lr_scheduler import LambdaLR
 
 # Initialize wandb
-wandb.init(project="simple-neural-net", settings=wandb.Settings(start_method="thread"))
+wandb.init(project="simple-neural-net-2", settings=wandb.Settings(start_method="thread"))
 
 seed = 42
 torch.manual_seed(seed)

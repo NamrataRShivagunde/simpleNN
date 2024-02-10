@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Define lists of hyperparameter values to iterate over
-hidden_sizes=(32 64 128)
+hidden_sizes=(64)
 output_sizes=(2)
-learning_rates=(0.0001 0.001 0.005 0.01 0.05 0.1 0.5 1)
-batch_sizes=(256 512)
+learning_rates=(0.01 0.05 0.1 0.5 1)
+batch_sizes=(256)
 num_epochs=(10)
 
 # Loop through each combination of hyperparameter values
