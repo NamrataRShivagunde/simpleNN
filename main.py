@@ -123,13 +123,10 @@ def main(args):
                 # Calculate the norms of Wa and Wb
                 norm_Wa = torch.norm(model.embedding.lora_A)
                 norm_Wb = torch.norm(model.embedding.lora_B)
-                # Log the norms of Wa and Wb
                 wandb.log({"norm_Wa_embed": norm_Wa.item()})
                 wandb.log({"norm_Wb_embed": norm_Wb.item()})
-                # Calculate the updates for Wa and Wb
                 update_Wa = optimizer.param_groups[0]['lr'] * optimizer.state[model.embedding.lora_A]['exp_avg'] / (torch.sqrt(optimizer.state[model.embedding.lora_A]['exp_avg_sq']) + 1e-8)
                 update_Wb = optimizer.param_groups[0]['lr'] * optimizer.state[model.embedding.lora_B]['exp_avg'] / (torch.sqrt(optimizer.state[model.embedding.lora_B]['exp_avg_sq']) + 1e-8)
-                # Log the norms of updates for Wa and Wb
                 wandb.log({"update_Wa_embed": update_Wa.norm().item()})
                 wandb.log({"update_Wb_embed": update_Wb.norm().item()})
 
@@ -160,7 +157,7 @@ def main(args):
                 optimizer.step()
                 updated_weights_embed_norm = model.embedding.embedding.clone().detach()
                 diff = (initial_weights_embed_norm - updated_weights_embed_norm).norm().item()
-                wandb.log({"norm(initial-updated)": embedding_update.norm().item()})
+                wandb.log({"norm(initial-updated)": diff.norm().item()})
 
                 # Accessing the embedding matrix and its update in Adam optimizer
                 first_moment = optimizer.state[model.embedding.weight]['exp_avg']  # Gradient (m1)
