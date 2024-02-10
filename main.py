@@ -115,7 +115,6 @@ def main(args):
            
             if add_lora:
                 optimizer.step()
-                print(optimizer)
                 wandb.log({"WaWb_embedding_layer": ((model.embedding.lora_A).T @ (model.embedding.lora_B).T * 1/16).norm().item()})
                 wandb.log({"WaWb_fc1_layer": ((model.fc1.lora_A).T @ (model.fc1.lora_B).T * 1/16).norm().item()})
                 wandb.log({"WaWb_fc2_layer": ((model.fc2.lora_A).T @ (model.fc2.lora_B).T * 1/16).norm().item()})
@@ -153,9 +152,9 @@ def main(args):
                 wandb.log({"update_Wb_fc2": update_Wb_fc2.norm().item()})
 
             else:
-                initial_weights_embed = model.embedding.weight
+                initial_weights_embed = model.embedding.weight.clone()
                 optimizer.step()
-                updated_weights_embed = model.embedding.weight
+                updated_weights_embed = model.embedding.weight.clone()
                 diff = (initial_weights_embed - updated_weights_embed).norm().item()
                 wandb.log({"norm(initial-updated)": diff})
 
