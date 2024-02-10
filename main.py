@@ -107,7 +107,7 @@ def main(args):
             if add_lora:
                 optimizer.step()
                 wandb.log({"-WaWb_embedding_layer": -((model.embedding.lora_B @ model.embedding.lora_A).transpose(0,1) * 1/16).norm().item()})
-                wandb.log({"-WaWb_embedding_layer": -((model.embedding.lora_A).T @ (model.embedding.lora_B).T).norm().item()})
+                # wandb.log({"-WaWb_embedding_layer": -((model.embedding.lora_A).T @ (model.embedding.lora_B).T).norm().item()})
                 wandb.log({"-WaWb_fc1_layer": -((model.fc1.lora_A).T @ (model.fc1.lora_B).T).norm().item()})
                 wandb.log({"-WaWb_fc2_layer": -((model.fc1.lora_A).T @ (model.fc1.lora_B).T).norm().item()})
             else:
