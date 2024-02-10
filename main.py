@@ -118,7 +118,7 @@ def main(args):
                 print(optimizer)
                 wandb.log({"WaWb_embedding_layer": ((model.embedding.lora_A).T @ (model.embedding.lora_B).T * 1/16).norm().item()})
                 wandb.log({"WaWb_fc1_layer": ((model.fc1.lora_A).T @ (model.fc1.lora_B).T * 1/16).norm().item()})
-                wandb.log({"WaWb_fc2_layer": ((model.fc1.lora_A).T @ (model.fc1.lora_B).T * 1/16).norm().item()})
+                wandb.log({"WaWb_fc2_layer": ((model.fc2.lora_A).T @ (model.fc2.lora_B).T * 1/16).norm().item()})
                 
                 # Calculate the norms of Wa and Wb
                 norm_Wa = torch.norm(model.embedding.lora_A)
