@@ -153,11 +153,11 @@ def main(args):
                 wandb.log({"update_Wb_fc2": update_Wb_fc2.norm().item()})
 
             else:
-                initial_weights_embed_norm = model.embedding.weight
+                initial_weights_embed = model.embedding.weight
                 optimizer.step()
-                updated_weights_embed_norm = model.embedding.weight
-                diff = (initial_weights_embed_norm - updated_weights_embed_norm).norm().item()
-                wandb.log({"norm(initial-updated)": diff.norm().item()})
+                updated_weights_embed = model.embedding.weight
+                diff = (initial_weights_embed - updated_weights_embed).norm().item()
+                wandb.log({"norm(initial-updated)": diff})
 
                 # Accessing the embedding matrix and its update in Adam optimizer
                 first_moment = optimizer.state[model.embedding.weight]['exp_avg']  # Gradient (m1)
