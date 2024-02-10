@@ -155,8 +155,8 @@ def main(args):
                 initial_weights_embed = model.embedding.weight.clone()
                 optimizer.step()
                 updated_weights_embed = model.embedding.weight.clone()
-                diff = (initial_weights_embed - updated_weights_embed).norm().item()
-                wandb.log({"norm(initial-updated)": diff})
+                diff = (updated_weights_embed-initial_weights_embed).norm().item()
+                wandb.log({"norm(updated-initial)": diff})
 
                 # Accessing the embedding matrix and its update in Adam optimizer
                 first_moment = optimizer.state[model.embedding.weight]['exp_avg']  # Gradient (m1)
