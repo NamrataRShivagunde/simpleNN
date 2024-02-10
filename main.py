@@ -106,9 +106,9 @@ def main(args):
             optimizer.step()
            
             if add_lora:
-                wandb.log({"-WaWb_embedding_layer": -((model.embedding.lora_A).T @ (model.embedding.lora_B).T).norm().item() })
-                wandb.log({"-WaWb_fc1_layer": -((model.fc1.lora_A).T @ (model.fc1.lora_B).T).norm().item() })
-                wandb.log({"-WaWb_fc2_layer": -((model.fc1.lora_A).T @ (model.fc1.lora_B).T).norm().item() })
+                wandb.log({"-WaWb_embedding_layer": (-(model.embedding.lora_A).T @ (model.embedding.lora_B).T).norm().item()})
+                wandb.log({"-WaWb_fc1_layer": (-(model.fc1.lora_A).T @ (model.fc1.lora_B).T).norm().item()})
+                wandb.log({"-WaWb_fc2_layer": (-(model.fc1.lora_A).T @ (model.fc1.lora_B).T).norm().item()})
             else:
                 # Accessing the embedding matrix and its update in Adam optimizer
                 embedding_grad = optimizer.state[model.fc1.weight]['exp_avg']  # Gradient (m1)
