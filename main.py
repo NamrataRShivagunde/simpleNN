@@ -184,7 +184,9 @@ def main(args):
             scheduler.step()
             # Log loss and gradients to wandb after each epoch
             wandb.log({"train_loss": loss.item()})
-            wandb.log({"lr": learning_rate})
+            # Log the current learning rate
+            current_lr = optimizer.param_groups[0]['lr']
+            wandb.log({"learning_rate": current_lr})
         print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
 
     # Evaluation
