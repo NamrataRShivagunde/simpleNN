@@ -71,7 +71,7 @@ def main(args):
     # Instantiate the model, loss function, and optimizer
     model = SimpleNet(vocab_size, hidden_size, output_size, add_lora)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    optimizer = optim.AdamW(model.parameters(), lr=learning_rate)
 
     # Log hyperparameters to wandb
     wandb.config.update({
@@ -103,7 +103,6 @@ def main(args):
             outputs = model(input_ids)
             loss = criterion(outputs, labels)
             loss.backward()
-            optimizer.step()
            
             if add_lora:
                 wandb.log({"-WaWb_embedding_layer": (-(model.embedding.lora_A).T @ (model.embedding.lora_B).T).norm().item()})
@@ -129,7 +128,8 @@ def main(args):
                 wandb.log({"-Adam(fc2_grad)": fc2_update.norm().item()})
 
                 wandb.log({"embedding_grad": model.embedding.weight.grad.norm().item(), "fc1_grad": model.fc1.weight.grad.norm().item(), "fc2_grad": model.fc2.weight.grad.norm().item()})
-
+            
+            optimizer.step()
             # Log loss and gradients to wandb after each epoch
             wandb.log({"train_loss": loss.item()})
        
