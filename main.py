@@ -153,9 +153,9 @@ def main(args):
                 wandb.log({"update_Wb_fc2": update_Wb_fc2.norm().item()})
 
             else:
-                initial_weights_embed_norm = model.embedding.embedding.clone().detach()
+                initial_weights_embed_norm = model.embedding.embedding
                 optimizer.step()
-                updated_weights_embed_norm = model.embedding.embedding.clone().detach()
+                updated_weights_embed_norm = model.embedding.embedding
                 diff = (initial_weights_embed_norm - updated_weights_embed_norm).norm().item()
                 wandb.log({"norm(initial-updated)": diff.norm().item()})
 
