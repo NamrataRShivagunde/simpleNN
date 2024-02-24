@@ -14,7 +14,7 @@ import loralib as lora
 from torch.optim.lr_scheduler import LambdaLR
 
 # Initialize wandb
-wandb.init(project="simple-neural-net-2", settings=wandb.Settings(start_method="thread"))
+wandb.init(project="simple-neural-net-3", settings=wandb.Settings(start_method="thread"))
 
 seed = 42
 torch.manual_seed(seed)
@@ -138,119 +138,120 @@ def main(args):
            
             if add_lora:
                 optimizer.step()
-                wandb.log({"WaWb_embedding_layer": ((model.embedding.lora_A).T @ (model.embedding.lora_B).T * 1/16).norm().item()})
-                wandb.log({"WaWb_fc1_layer": ((model.fc1.lora_A).T @ (model.fc1.lora_B).T * 1/16).norm().item()})
-                wandb.log({"WaWb_fc2_layer": ((model.fc2.lora_A).T @ (model.fc2.lora_B).T * 1/16).norm().item()})
-
-                print(step)
-                if (step + 1) % 500 == 0:
-                    print("enter the loop")
-                    W_emb_current = ((model.embedding.lora_A).T @ (model.embedding.lora_B).T * 1/16).clone().detach()
-                    W_fc1_current = ((model.fc1.lora_A).T @ (model.fc1.lora_B).T * 1/16).clone().detach()
-                    W_fc2_current = ((model.fc2.lora_A).T @ (model.fc2.lora_B).T * 1/16).clone().detach()
-
-                    delta_W_emb = W_emb_current - W0_emb
-                    delta_W_fc1 = W_fc1_current - W0_fc1
-                    delta_W_fc2 = W_fc2_current - W0_fc2
-
-                    wandb.log({"Update_WaWb_embed": delta_W_emb.norm().item()})
-                    wandb.log({"Update_WaWb_fc1": delta_W_fc1.norm().item()})
-                    wandb.log({"Update_WaWb_fc2": delta_W_fc2.norm().item()})
-
-                    # Append the heatmaps to the respective lists
-                    heatmap_list_emb.append(delta_W_emb.detach().cpu().numpy())
-                    heatmap_list_fc1.append(delta_W_fc1.detach().cpu().numpy())
-                    heatmap_list_fc2.append(delta_W_fc2.detach().cpu().numpy())
-
-                    # Update W0 for the next 1000 steps
-                    W0_emb = W_emb_current
-                    W0_fc1 = W_fc1_current
-                    W0_fc2 = W_fc2_current
-                
-                # # Calculate the norms of Wa and Wb
-                # norm_Wa = torch.norm(model.embedding.lora_A)
-                # norm_Wb = torch.norm(model.embedding.lora_B)
-                # wandb.log({"norm_Wa_embed": norm_Wa.item()})
-                # wandb.log({"norm_Wb_embed": norm_Wb.item()})
-                # update_Wa = optimizer.param_groups[0]['lr'] * optimizer.state[model.embedding.lora_A]['exp_avg'] / (torch.sqrt(optimizer.state[model.embedding.lora_A]['exp_avg_sq']) + 1e-8)
-                # update_Wb = optimizer.param_groups[0]['lr'] * optimizer.state[model.embedding.lora_B]['exp_avg'] / (torch.sqrt(optimizer.state[model.embedding.lora_B]['exp_avg_sq']) + 1e-8)
-                # wandb.log({"update_Wa_embed": update_Wa.norm().item()})
-                # wandb.log({"update_Wb_embed": update_Wb.norm().item()})
-
-                # # Log norms and updates for fc1 layer
-                # wandb.log({"WaWb_fc1_layer": ((model.fc1.lora_A).T @ (model.fc1.lora_B).T * 1/16).norm().item()})
-                # norm_Wa_fc1 = torch.norm(model.fc1.lora_A)
-                # norm_Wb_fc1 = torch.norm(model.fc1.lora_B)
-                # wandb.log({"norm_Wa_fc1": norm_Wa_fc1.item()})
-                # wandb.log({"norm_Wb_fc1": norm_Wb_fc1.item()})
-                # update_Wa_fc1 = optimizer.param_groups[0]['lr'] * optimizer.state[model.fc1.lora_A]['exp_avg'] / (torch.sqrt(optimizer.state[model.fc1.lora_A]['exp_avg_sq']) + 1e-8)
-                # update_Wb_fc1 = optimizer.param_groups[0]['lr'] * optimizer.state[model.fc1.lora_B]['exp_avg'] / (torch.sqrt(optimizer.state[model.fc1.lora_B]['exp_avg_sq']) + 1e-8)
-                # wandb.log({"update_Wa_fc1": update_Wa_fc1.norm().item()})
-                # wandb.log({"update_Wb_fc1": update_Wb_fc1.norm().item()})
-
-                # # Log norms and updates for fc2 layer
-                # wandb.log({"WaWb_fc2_layer": ((model.fc2.lora_A).T @ (model.fc2.lora_B).T * 1/16).norm().item()})
-                # norm_Wa_fc2 = torch.norm(model.fc2.lora_A)
-                # norm_Wb_fc2 = torch.norm(model.fc2.lora_B)
-                # wandb.log({"norm_Wa_fc2": norm_Wa_fc2.item()})
-                # wandb.log({"norm_Wb_fc2": norm_Wb_fc2.item()})
-                # update_Wa_fc2 = optimizer.param_groups[0]['lr'] * optimizer.state[model.fc2.lora_A]['exp_avg'] / (torch.sqrt(optimizer.state[model.fc2.lora_A]['exp_avg_sq']) + 1e-8)
-                # update_Wb_fc2 = optimizer.param_groups[0]['lr'] * optimizer.state[model.fc2.lora_B]['exp_avg'] / (torch.sqrt(optimizer.state[model.fc2.lora_B]['exp_avg_sq']) + 1e-8)
-                # wandb.log({"update_Wa_fc2": update_Wa_fc2.norm().item()})
-                # wandb.log({"update_Wb_fc2": update_Wb_fc2.norm().item()})
-
+                wandb.log({"update_WaWb_embed": ((model.embedding.lora_A).T @ (model.embedding.lora_B).T * 1/rank).norm().item()})
+                wandb.log({"update_WaWb_fc1": ((model.fc1.lora_A).T @ (model.fc1.lora_B).T * 1/rank).norm().item()})
+                wandb.log({"update_WaWb_fc2": ((model.fc2.lora_A).T @ (model.fc2.lora_B).T * 1/rank).norm().item()})
             else:
                 optimizer.step()
+                wandb.log({"update_W_embed": ((model.embedding.lora_A).T @ (model.embedding.lora_B).T * 1/rank).norm().item()})
+                wandb.log({"update_W_fc1": ((model.fc1.lora_A).T @ (model.fc1.lora_B).T * 1/rank).norm().item()})
+                wandb.log({"update_W_fc2": ((model.fc2.lora_A).T @ (model.fc2.lora_B).T * 1/rank).norm().item()})
 
-                print(step)
-                if (step + 1) % 500 == 0:
-                    print("enter the loop")
-                    updated_weights_embed = model.embedding.weight.clone()
-                    diff_emb = updated_weights_embed - Wo_emb
-                    heatmap_list_emb.append(diff_emb.detach().cpu().numpy())
-                    wandb.log({"Update_embed": diff_emb.norm().item()})
+        # after each epoch
+        if add_lora:       
+            print("enter the loop")
+            W_emb_current = ((model.embedding.lora_A).T @ (model.embedding.lora_B).T * 1/rank).clone().detach()
+            W_fc1_current = ((model.fc1.lora_A).T @ (model.fc1.lora_B).T * 1/rank).clone().detach()
+            W_fc2_current = ((model.fc2.lora_A).T @ (model.fc2.lora_B).T * 1/rank).clone().detach()
 
-                    # Track the weight updates for fc1 layer
-                    updated_weights_fc1 = model.fc1.weight.clone()
-                    diff_fc1 = updated_weights_fc1 - W0_fc1
-                    heatmap_list_fc1.append(diff_fc1.detach().cpu().numpy())
-                    wandb.log({"Update_fc1": diff_fc1.norm().item()})
+            delta_W_emb = W_emb_current - W0_emb
+            delta_W_fc1 = W_fc1_current - W0_fc1
+            delta_W_fc2 = W_fc2_current - W0_fc2
 
-                    # Track the weight updates for fc2 layer
-                    updated_weights_fc2 = model.fc2.weight.clone()
-                    diff_fc2 = updated_weights_fc2 - W0_fc2
-                    heatmap_list_fc2.append(diff_fc2.detach().cpu().numpy())
-                    wandb.log({"Update_fc2": diff_fc1.norm().item()})
+            wandb.log({"Span_update_WaWb_embed": delta_W_emb.norm().item()})
+            wandb.log({"Span_update_WaWb_fc1": delta_W_fc1.norm().item()})
+            wandb.log({"Span_update_WaWb_fc2": delta_W_fc2.norm().item()})
 
-                    # Update W0 for the next 1000 steps
-                    W0_emb = updated_weights_embed
-                    W0_fc1 = updated_weights_fc1
-                    W0_fc2 = updated_weights_fc2
+            # Append the heatmaps to the respective lists
+            heatmap_list_emb.append(delta_W_emb.detach().cpu().numpy())
+            heatmap_list_fc1.append(delta_W_fc1.detach().cpu().numpy())
+            heatmap_list_fc2.append(delta_W_fc2.detach().cpu().numpy())
 
-                # initial_weights_embed = model.embedding.weight.clone()
-                # optimizer.step()
-                # updated_weights_embed = model.embedding.weight.clone()
-                # diff = (updated_weights_embed-initial_weights_embed).norm().item()
-                # wandb.log({"norm(updated-initial)": diff})
+            # Update W0 for the next 1000 steps
+            W0_emb = W_emb_current
+            W0_fc1 = W_fc1_current
+            W0_fc2 = W_fc2_current
+                
+            # # Calculate the norms of Wa and Wb
+            # norm_Wa = torch.norm(model.embedding.lora_A)
+            # norm_Wb = torch.norm(model.embedding.lora_B)
+            # wandb.log({"norm_Wa_embed": norm_Wa.item()})
+            # wandb.log({"norm_Wb_embed": norm_Wb.item()})
+            # update_Wa = optimizer.param_groups[0]['lr'] * optimizer.state[model.embedding.lora_A]['exp_avg'] / (torch.sqrt(optimizer.state[model.embedding.lora_A]['exp_avg_sq']) + 1e-8)
+            # update_Wb = optimizer.param_groups[0]['lr'] * optimizer.state[model.embedding.lora_B]['exp_avg'] / (torch.sqrt(optimizer.state[model.embedding.lora_B]['exp_avg_sq']) + 1e-8)
+            # wandb.log({"update_Wa_embed": update_Wa.norm().item()})
+            # wandb.log({"update_Wb_embed": update_Wb.norm().item()})
 
-                # # Accessing the embedding matrix and its update in Adam optimizer
-                # first_moment = optimizer.state[model.embedding.weight]['exp_avg']  # Gradient (m1)
-                # second_moment = optimizer.state[model.embedding.weight]['exp_avg_sq']  # Update (m2)
-                # # Calculate the update without modifying the original parameters
-                # embedding_update = optimizer.param_groups[0]['lr'] * first_moment / (torch.sqrt(second_moment) + 1e-8)
-                # # Logging the update without applying it to the parameters
-                # wandb.log({"Adam(embedding_grad)": embedding_update.norm().item()})
+            # # Log norms and updates for fc1 layer
+            # wandb.log({"WaWb_fc1_layer": ((model.fc1.lora_A).T @ (model.fc1.lora_B).T * 1/16).norm().item()})
+            # norm_Wa_fc1 = torch.norm(model.fc1.lora_A)
+            # norm_Wb_fc1 = torch.norm(model.fc1.lora_B)
+            # wandb.log({"norm_Wa_fc1": norm_Wa_fc1.item()})
+            # wandb.log({"norm_Wb_fc1": norm_Wb_fc1.item()})
+            # update_Wa_fc1 = optimizer.param_groups[0]['lr'] * optimizer.state[model.fc1.lora_A]['exp_avg'] / (torch.sqrt(optimizer.state[model.fc1.lora_A]['exp_avg_sq']) + 1e-8)
+            # update_Wb_fc1 = optimizer.param_groups[0]['lr'] * optimizer.state[model.fc1.lora_B]['exp_avg'] / (torch.sqrt(optimizer.state[model.fc1.lora_B]['exp_avg_sq']) + 1e-8)
+            # wandb.log({"update_Wa_fc1": update_Wa_fc1.norm().item()})
+            # wandb.log({"update_Wb_fc1": update_Wb_fc1.norm().item()})
 
-                # first_moment = optimizer.state[model.fc1.weight]['exp_avg']  # Gradient (m1)
-                # second_moment = optimizer.state[model.fc1.weight]['exp_avg_sq']  # Update (m2)
-                # fc1_update = optimizer.param_groups[0]['lr'] * first_moment / (torch.sqrt(second_moment) + 1e-8)
-                # wandb.log({"Adam(fc1_grad)": fc1_update.norm().item()})
+            # # Log norms and updates for fc2 layer
+            # wandb.log({"WaWb_fc2_layer": ((model.fc2.lora_A).T @ (model.fc2.lora_B).T * 1/16).norm().item()})
+            # norm_Wa_fc2 = torch.norm(model.fc2.lora_A)
+            # norm_Wb_fc2 = torch.norm(model.fc2.lora_B)
+            # wandb.log({"norm_Wa_fc2": norm_Wa_fc2.item()})
+            # wandb.log({"norm_Wb_fc2": norm_Wb_fc2.item()})
+            # update_Wa_fc2 = optimizer.param_groups[0]['lr'] * optimizer.state[model.fc2.lora_A]['exp_avg'] / (torch.sqrt(optimizer.state[model.fc2.lora_A]['exp_avg_sq']) + 1e-8)
+            # update_Wb_fc2 = optimizer.param_groups[0]['lr'] * optimizer.state[model.fc2.lora_B]['exp_avg'] / (torch.sqrt(optimizer.state[model.fc2.lora_B]['exp_avg_sq']) + 1e-8)
+            # wandb.log({"update_Wa_fc2": update_Wa_fc2.norm().item()})
+            # wandb.log({"update_Wb_fc2": update_Wb_fc2.norm().item()})
 
-                # first_moment = optimizer.state[model.fc2.weight]['exp_avg']  # Gradient (m1)
-                # second_moment = optimizer.state[model.fc2.weight]['exp_avg_sq']  # Update (m2)
-                # fc2_update = optimizer.param_groups[0]['lr'] * first_moment / (torch.sqrt(second_moment) + 1e-8)
-                # wandb.log({"Adam(fc2_grad)": fc2_update.norm().item()})
-                # # wandb.log({"embedding_grad": model.embedding.weight.grad.norm().item(), "fc1_grad": model.fc1.weight.grad.norm().item(), "fc2_grad": model.fc2.weight.grad.norm().item()})
+        else:
+            print("enter the loop")
+            updated_weights_embed = model.embedding.weight.clone()
+            diff_emb = updated_weights_embed - Wo_emb
+            heatmap_list_emb.append(diff_emb.detach().cpu().numpy())
+            wandb.log({"Span_update_W_embed": diff_emb.norm().item()})
+
+            # Track the weight updates for fc1 layer
+            updated_weights_fc1 = model.fc1.weight.clone()
+            diff_fc1 = updated_weights_fc1 - W0_fc1
+            heatmap_list_fc1.append(diff_fc1.detach().cpu().numpy())
+            wandb.log({"Span_update_W_fc1": diff_fc1.norm().item()})
+
+            # Track the weight updates for fc2 layer
+            updated_weights_fc2 = model.fc2.weight.clone()
+            diff_fc2 = updated_weights_fc2 - W0_fc2
+            heatmap_list_fc2.append(diff_fc2.detach().cpu().numpy())
+            wandb.log({"Span_update_W_fc2": diff_fc1.norm().item()})
+
+            # Update W0 for the next 1000 steps
+            W0_emb = updated_weights_embed
+            W0_fc1 = updated_weights_fc1
+            W0_fc2 = updated_weights_fc2
+
+            # initial_weights_embed = model.embedding.weight.clone()
+            # optimizer.step()
+            # updated_weights_embed = model.embedding.weight.clone()
+            # diff = (updated_weights_embed-initial_weights_embed).norm().item()
+            # wandb.log({"norm(updated-initial)": diff})
+
+            # # Accessing the embedding matrix and its update in Adam optimizer
+            # first_moment = optimizer.state[model.embedding.weight]['exp_avg']  # Gradient (m1)
+            # second_moment = optimizer.state[model.embedding.weight]['exp_avg_sq']  # Update (m2)
+            # # Calculate the update without modifying the original parameters
+            # embedding_update = optimizer.param_groups[0]['lr'] * first_moment / (torch.sqrt(second_moment) + 1e-8)
+            # # Logging the update without applying it to the parameters
+            # wandb.log({"Adam(embedding_grad)": embedding_update.norm().item()})
+
+            # first_moment = optimizer.state[model.fc1.weight]['exp_avg']  # Gradient (m1)
+            # second_moment = optimizer.state[model.fc1.weight]['exp_avg_sq']  # Update (m2)
+            # fc1_update = optimizer.param_groups[0]['lr'] * first_moment / (torch.sqrt(second_moment) + 1e-8)
+            # wandb.log({"Adam(fc1_grad)": fc1_update.norm().item()})
+
+            # first_moment = optimizer.state[model.fc2.weight]['exp_avg']  # Gradient (m1)
+            # second_moment = optimizer.state[model.fc2.weight]['exp_avg_sq']  # Update (m2)
+            # fc2_update = optimizer.param_groups[0]['lr'] * first_moment / (torch.sqrt(second_moment) + 1e-8)
+            # wandb.log({"Adam(fc2_grad)": fc2_update.norm().item()})
+            # # wandb.log({"embedding_grad": model.embedding.weight.grad.norm().item(), "fc1_grad": model.fc1.weight.grad.norm().item(), "fc2_grad": model.fc2.weight.grad.norm().item()})
             
             scheduler.step()
             # Log loss and gradients to wandb after each epoch
@@ -313,7 +314,7 @@ def main(args):
     plt.tight_layout()
 
     # Save the figure
-    plt.savefig(f'all_heatmaps_combined_{add_lora}.png')
+    plt.savefig(f'all_heatmaps_combined_{add_lora}_{learning_rate}_{rank}.png')
 
     # Show the figure (optional)
     plt.show()

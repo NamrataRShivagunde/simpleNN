@@ -3,9 +3,9 @@
 # Define lists of hyperparameter values to iterate over
 hidden_sizes=(64)
 output_sizes=(2)
-learning_rates=(0.005)
+learning_rates=(0.005 0.05 0.0005)
 batch_sizes=(256)
-num_epochs=(20)
+num_epochs=(10)
 
 # Loop through each combination of hyperparameter values
 for hidden_size in "${hidden_sizes[@]}"
