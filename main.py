@@ -142,8 +142,8 @@ def main(args):
                 wandb.log({"WaWb_fc1_layer": ((model.fc1.lora_A).T @ (model.fc1.lora_B).T * 1/16).norm().item()})
                 wandb.log({"WaWb_fc2_layer": ((model.fc2.lora_A).T @ (model.fc2.lora_B).T * 1/16).norm().item()})
 
-                # After every 1000 steps, track the Frobenius norm of W0-NewW0
-                if (step + 1) % 1000 == 0:
+                if (step + 1) % 500 == 0:
+                    print("enter the loop")
                     W_emb_current = ((model.embedding.lora_A).T @ (model.embedding.lora_B).T * 1/16).clone().detach()
                     W_fc1_current = ((model.fc1.lora_A).T @ (model.fc1.lora_B).T * 1/16).clone().detach()
                     W_fc2_current = ((model.fc2.lora_A).T @ (model.fc2.lora_B).T * 1/16).clone().detach()
@@ -201,7 +201,8 @@ def main(args):
             else:
                 optimizer.step()
 
-                if (step + 1) % 1000 == 0:
+                if (step + 1) % 500 == 0:
+                    print("enter the loop")
                     updated_weights_embed = model.embedding.weight.clone()
                     diff_emb = updated_weights_embed - Wo_emb
                     heatmap_list_emb.append(diff_emb.detach().cpu().numpy())
@@ -284,7 +285,7 @@ def main(args):
     for i, heatmap in enumerate(heatmap_list_emb):
         plt.imshow(heatmap, cmap='viridis', aspect='auto')
         plt.colorbar()
-        plt.title(f'Step {1000 * (i + 1)}')
+        plt.title(f'Step {500 * (i + 1)}')
         plt.xlabel('Output Dimension')
         plt.ylabel('Input Dimension')
 
@@ -293,7 +294,7 @@ def main(args):
     for i, heatmap in enumerate(heatmap_list_fc1):
         plt.imshow(heatmap, cmap='viridis', aspect='auto')
         plt.colorbar()
-        plt.title(f'Step {1000 * (i + 1)}')
+        plt.title(f'Step {500 * (i + 1)}')
         plt.xlabel('Output Dimension')
         plt.ylabel('Input Dimension')
 
@@ -302,7 +303,7 @@ def main(args):
     for i, heatmap in enumerate(heatmap_list_fc2):
         plt.imshow(heatmap, cmap='viridis', aspect='auto')
         plt.colorbar()
-        plt.title(f'Step {1000 * (i + 1)}')
+        plt.title(f'Step {500 * (i + 1)}')
         plt.xlabel('Output Dimension')
         plt.ylabel('Input Dimension')
 
