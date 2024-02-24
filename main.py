@@ -284,12 +284,12 @@ def main(args):
     print(f"Test Accuracy: {accuracy}")
 
     # After training, visualize and save all the heatmaps
-    plt.figure(figsize=(60, 15))
+    plt.figure(figsize=(120, 25))
 
     # Subplot for the embedding layer
     for i, heatmap in enumerate(heatmap_list_emb):
-        plt.subplot(5, 5, i+1)
-        plt.imshow(heatmap, cmap='viridis', aspect='auto')
+        plt.subplot(10, 10, i+1)
+        plt.imshow(heatmap, cmap='magma', aspect='auto')
         plt.colorbar()
         plt.title(f'Step {500 * (i + 1)}')
         plt.xlabel('Output Dimension')
@@ -297,8 +297,8 @@ def main(args):
 
     # Subplot for the fc1 layer
     for i, heatmap in enumerate(heatmap_list_fc1):
-        plt.subplot(5, 5, 5+i+1)
-        plt.imshow(heatmap, cmap='viridis', aspect='auto')
+        plt.subplot(10, 10, 10+i+1)
+        plt.imshow(heatmap, cmap='magma', aspect='auto')
         plt.colorbar()
         plt.title(f'Step {500 * (i + 1)}')
         plt.xlabel('Output Dimension')
@@ -306,8 +306,8 @@ def main(args):
 
     # Subplot for the fc2 layer
     for i, heatmap in enumerate(heatmap_list_fc2):
-        plt.subplot(5, 5, 10+i+1)
-        plt.imshow(heatmap, cmap='viridis', aspect='auto')
+        plt.subplot(10, 10, 20+i+1)
+        plt.imshow(heatmap, cmap='magma', aspect='auto')
         plt.colorbar()
         plt.title(f'Step {500 * (i + 1)}')
         plt.xlabel('Output Dimension')
