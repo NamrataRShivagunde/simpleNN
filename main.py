@@ -152,9 +152,9 @@ def main(args):
                     delta_W_fc1 = W_fc1_current - W0_fc1
                     delta_W_fc2 = W_fc2_current - W0_fc2
 
-                    wandb.log({"Span_Delta_WaWb_embedding_layer": delta_W_emb.norm().item()})
-                    wandb.log({"Span_Delta_WaWb_fc1_layer": delta_W_fc1.norm().item()})
-                    wandb.log({"Span_Delta_WaWb_fc2_layer": delta_W_fc2.norm().item()})
+                    wandb.log({"Update_WaWb_embed": delta_W_emb.norm().item()})
+                    wandb.log({"Update_WaWb_fc1": delta_W_fc1.norm().item()})
+                    wandb.log({"Update_WaWb_fc2": delta_W_fc2.norm().item()})
 
                     # Append the heatmaps to the respective lists
                     heatmap_list_emb.append(delta_W_emb.detach().cpu().numpy())
@@ -205,16 +205,19 @@ def main(args):
                     updated_weights_embed = model.embedding.weight.clone()
                     diff_emb = updated_weights_embed - Wo_emb
                     heatmap_list_emb.append(diff_emb.detach().cpu().numpy())
+                    wandb.log({"Update_embed": diff_emb.norm().item()})
 
                     # Track the weight updates for fc1 layer
                     updated_weights_fc1 = model.fc1.weight.clone()
                     diff_fc1 = updated_weights_fc1 - W0_fc1
                     heatmap_list_fc1.append(diff_fc1.detach().cpu().numpy())
+                    wandb.log({"Update_fc1": diff_fc1.norm().item()})
 
                     # Track the weight updates for fc2 layer
                     updated_weights_fc2 = model.fc2.weight.clone()
                     diff_fc2 = updated_weights_fc2 - W0_fc2
                     heatmap_list_fc2.append(diff_fc2.detach().cpu().numpy())
+                    wandb.log({"Update_fc2": diff_fc1.norm().item()})
 
                     # Update W0 for the next 1000 steps
                     W0_emb = updated_weights_embed
