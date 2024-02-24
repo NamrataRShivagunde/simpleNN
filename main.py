@@ -142,6 +142,7 @@ def main(args):
                 wandb.log({"WaWb_fc1_layer": ((model.fc1.lora_A).T @ (model.fc1.lora_B).T * 1/16).norm().item()})
                 wandb.log({"WaWb_fc2_layer": ((model.fc2.lora_A).T @ (model.fc2.lora_B).T * 1/16).norm().item()})
 
+                print(step)
                 if (step + 1) % 500 == 0:
                     print("enter the loop")
                     W_emb_current = ((model.embedding.lora_A).T @ (model.embedding.lora_B).T * 1/16).clone().detach()
@@ -201,6 +202,7 @@ def main(args):
             else:
                 optimizer.step()
 
+                print(step)
                 if (step + 1) % 500 == 0:
                     print("enter the loop")
                     updated_weights_embed = model.embedding.weight.clone()
