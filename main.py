@@ -64,6 +64,7 @@ def main(args):
     learning_rate = args.learning_rate
     batch_size = args.batch_size
     num_epochs = args.num_epochs
+    rank = args.rank
     add_lora = args.add_lora
 
     # Load and preprocess dataset
