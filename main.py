@@ -113,9 +113,9 @@ def main(args):
         Wo_fc1 = ((model.fc1.lora_A).T @ (model.fc1.lora_B).T * 1/16).clone()
         Wo_fc2 = ((model.fc2.lora_A).T @ (model.fc2.lora_B).T * 1/16).clone()
 
-        heatmap_list_emb.append(Wo_emb.cpu().numpy())
-        heatmap_list_fc1.append(Wo_fc1.cpu().numpy())
-        heatmap_list_fc2.append(Wo_fc2.cpu().numpy())
+        heatmap_list_emb.append(Wo_emb.detach().cpu().numpy())
+        heatmap_list_fc1.append(Wo_fc1.detach().cpu().numpy())
+        heatmap_list_fc2.append(Wo_fc2.detach().cpu().numpy())
     else:
         Wo_emb = model.embedding.weight.clone()
         Wo_fc1 = model.fc1.weight.clone()
