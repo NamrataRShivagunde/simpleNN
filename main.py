@@ -121,9 +121,9 @@ def main(args):
         Wo_fc1 = model.fc1.weight.clone()
         Wo_fc2 = model.fc2.weight.clone()
 
-        heatmap_list_emb.append(Wo_emb.detach().numpy())
-        heatmap_list_fc1.append(Wo_fc1.detach().numpy())
-        heatmap_list_fc2.append(Wo_fc2.detach().numpy())
+        heatmap_list_emb.append(Wo_emb.detach().cpu().numpy())
+        heatmap_list_fc1.append(Wo_fc1.detach().cpu().numpy())
+        heatmap_list_fc2.append(Wo_fc2.detach().cpu().numpy())
 
     for epoch in range(num_epochs):
         model.train()
@@ -157,9 +157,9 @@ def main(args):
                     wandb.log({"Span_Delta_WaWb_fc2_layer": delta_W_fc2.norm().item()})
 
                     # Append the heatmaps to the respective lists
-                    heatmap_list_emb.append(delta_W_emb.detach().numpy())
-                    heatmap_list_fc1.append(delta_W_fc1.detach().numpy())
-                    heatmap_list_fc2.append(delta_W_fc2.detach().numpy())
+                    heatmap_list_emb.append(delta_W_emb.detach().cpu().numpy())
+                    heatmap_list_fc1.append(delta_W_fc1.detach().cpu().numpy())
+                    heatmap_list_fc2.append(delta_W_fc2.detach().cpu().numpy())
 
                     # Update W0 for the next 1000 steps
                     W0_emb = W_emb_current
@@ -204,17 +204,17 @@ def main(args):
                 if (step + 1) % 1000 == 0:
                     updated_weights_embed = model.embedding.weight.clone()
                     diff_emb = updated_weights_embed - Wo_emb
-                    heatmap_list_emb.append(diff_emb.detach().numpy())
+                    heatmap_list_emb.append(diff_emb.detach().cpu().numpy())
 
                     # Track the weight updates for fc1 layer
                     updated_weights_fc1 = model.fc1.weight.clone()
                     diff_fc1 = updated_weights_fc1 - W0_fc1
-                    heatmap_list_fc1.append(diff_fc1.detach().numpy())
+                    heatmap_list_fc1.append(diff_fc1.detach().cpu().numpy())
 
                     # Track the weight updates for fc2 layer
                     updated_weights_fc2 = model.fc2.weight.clone()
                     diff_fc2 = updated_weights_fc2 - W0_fc2
-                    heatmap_list_fc2.append(diff_fc2.detach().numpy())
+                    heatmap_list_fc2.append(diff_fc2.detach().cpu().numpy())
 
                     # Update W0 for the next 1000 steps
                     W0_emb = updated_weights_embed
