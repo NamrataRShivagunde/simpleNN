@@ -143,9 +143,9 @@ def main(args):
                 wandb.log({"update_WaWb_fc2": ((model.fc2.lora_A).T @ (model.fc2.lora_B).T * 1/rank).norm().item()})
             else:
                 optimizer.step()
-                wandb.log({"update_W_embed": ((model.embedding.lora_A).T @ (model.embedding.lora_B).T * 1/rank).norm().item()})
-                wandb.log({"update_W_fc1": ((model.fc1.lora_A).T @ (model.fc1.lora_B).T * 1/rank).norm().item()})
-                wandb.log({"update_W_fc2": ((model.fc2.lora_A).T @ (model.fc2.lora_B).T * 1/rank).norm().item()})
+                wandb.log({"update_W_embed": model.embedding.weight.norm().item()})
+                wandb.log({"update_W_fc1":  model.fc1.weight.norm().item()})
+                wandb.log({"update_W_fc2":  model.fc2.weight.norm().item()})
 
         # after each epoch
         if add_lora:       
