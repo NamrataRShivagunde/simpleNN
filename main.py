@@ -284,14 +284,14 @@ def main(args):
     print(f"Test Accuracy: {accuracy}")
 
     # After training, visualize and save all the heatmaps
-    plt.figure(figsize=(120, 25))
+    plt.figure(figsize=(80, 20))
 
     # Subplot for the embedding layer
     for i, heatmap in enumerate(heatmap_list_emb):
         plt.subplot(10, 10, i+1)
         plt.imshow(heatmap, cmap='magma', aspect='auto')
         plt.colorbar()
-        plt.title(f'Step {500 * (i + 1)}')
+        plt.title(f'Step {500 * (i)}')
         plt.xlabel('Output Dimension')
         plt.ylabel('Input Dimension')
 
@@ -300,7 +300,7 @@ def main(args):
         plt.subplot(10, 10, 10+i+1)
         plt.imshow(heatmap, cmap='magma', aspect='auto')
         plt.colorbar()
-        plt.title(f'Step {500 * (i + 1)}')
+        plt.title(f'Step {500 * (i)}')
         plt.xlabel('Output Dimension')
         plt.ylabel('Input Dimension')
 
@@ -309,7 +309,7 @@ def main(args):
         plt.subplot(10, 10, 20+i+1)
         plt.imshow(heatmap, cmap='magma', aspect='auto')
         plt.colorbar()
-        plt.title(f'Step {500 * (i + 1)}')
+        plt.title(f'Step {500 * (i)}')
         plt.xlabel('Output Dimension')
         plt.ylabel('Input Dimension')
 
