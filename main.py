@@ -20,7 +20,7 @@ seed = 42
 torch.manual_seed(seed)
 random.seed(seed)
 
-# Define a simple 2-layer neural network
+# Define a simple 2-layer neural netW0rk
 class SimpleNet(nn.Module):
     def __init__(self, vocab_size, hidden_size, output_size, rank, add_lora=False):
         super(SimpleNet, self).__init__()
@@ -109,21 +109,21 @@ def main(args):
 
 
     if add_lora:
-        Wo_emb = ((model.embedding.lora_A).T @ (model.embedding.lora_B).T * 1/16).clone()
-        Wo_fc1 = ((model.fc1.lora_A).T @ (model.fc1.lora_B).T * 1/16).clone()
-        Wo_fc2 = ((model.fc2.lora_A).T @ (model.fc2.lora_B).T * 1/16).clone()
+        W0_emb = ((model.embedding.lora_A).T @ (model.embedding.lora_B).T * 1/16).clone()
+        W0_fc1 = ((model.fc1.lora_A).T @ (model.fc1.lora_B).T * 1/16).clone()
+        W0_fc2 = ((model.fc2.lora_A).T @ (model.fc2.lora_B).T * 1/16).clone()
 
-        heatmap_list_emb.append(Wo_emb.detach().cpu().numpy())
-        heatmap_list_fc1.append(Wo_fc1.detach().cpu().numpy())
-        heatmap_list_fc2.append(Wo_fc2.detach().cpu().numpy())
+        heatmap_list_emb.append(W0_emb.detach().cpu().numpy())
+        heatmap_list_fc1.append(W0_fc1.detach().cpu().numpy())
+        heatmap_list_fc2.append(W0_fc2.detach().cpu().numpy())
     else:
-        Wo_emb = model.embedding.weight.clone()
-        Wo_fc1 = model.fc1.weight.clone()
-        Wo_fc2 = model.fc2.weight.clone()
+        W0_emb = model.embedding.weight.clone()
+        W0_fc1 = model.fc1.weight.clone()
+        W0_fc2 = model.fc2.weight.clone()
 
-        heatmap_list_emb.append(Wo_emb.detach().cpu().numpy())
-        heatmap_list_fc1.append(Wo_fc1.detach().cpu().numpy())
-        heatmap_list_fc2.append(Wo_fc2.detach().cpu().numpy())
+        heatmap_list_emb.append(W0_emb.detach().cpu().numpy())
+        heatmap_list_fc1.append(W0_fc1.detach().cpu().numpy())
+        heatmap_list_fc2.append(W0_fc2.detach().cpu().numpy())
 
     for epoch in range(num_epochs):
         model.train()
@@ -207,7 +207,7 @@ def main(args):
         else:
             print("enter the loop")
             updated_weights_embed = model.embedding.weight.clone()
-            diff_emb = updated_weights_embed - Wo_emb
+            diff_emb = updated_weights_embed - W0_emb
             heatmap_list_emb.append(diff_emb.detach().cpu().numpy())
             wandb.log({"Span_update_W_embed": diff_emb.norm().item()})
 
