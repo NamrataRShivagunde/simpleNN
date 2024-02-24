@@ -146,6 +146,15 @@ def main(args):
                 wandb.log({"update_W_embed": model.embedding.weight.norm().item()})
                 wandb.log({"update_W_fc1":  model.fc1.weight.norm().item()})
                 wandb.log({"update_W_fc2":  model.fc2.weight.norm().item()})
+            
+            scheduler.step()
+            # Log loss and gradients to wandb after each epoch
+            wandb.log({"train_loss": loss.item()})
+            # Log the current learning rate
+            current_lr = optimizer.param_groups[0]['lr']
+            wandb.log({"learning_rate": current_lr})
+            wandb.log({"epoch": epoch})
+        print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
 
         # after each epoch
         if add_lora:       
@@ -253,13 +262,7 @@ def main(args):
             # wandb.log({"Adam(fc2_grad)": fc2_update.norm().item()})
             # # wandb.log({"embedding_grad": model.embedding.weight.grad.norm().item(), "fc1_grad": model.fc1.weight.grad.norm().item(), "fc2_grad": model.fc2.weight.grad.norm().item()})
             
-            scheduler.step()
-            # Log loss and gradients to wandb after each epoch
-            wandb.log({"train_loss": loss.item()})
-            # Log the current learning rate
-            current_lr = optimizer.param_groups[0]['lr']
-            wandb.log({"learning_rate": current_lr})
-        print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
+        
 
     # Evaluation
     model.eval()
@@ -281,11 +284,11 @@ def main(args):
     print(f"Test Accuracy: {accuracy}")
 
     # After training, visualize and save all the heatmaps
-    plt.figure(figsize=(18, 6))
+    plt.figure(figsize=(60, 15))
 
     # Subplot for the embedding layer
-    plt.subplot(1, 3, 1)
     for i, heatmap in enumerate(heatmap_list_emb):
+        plt.subplot(5, 5, i+1)
         plt.imshow(heatmap, cmap='viridis', aspect='auto')
         plt.colorbar()
         plt.title(f'Step {500 * (i + 1)}')
@@ -293,8 +296,8 @@ def main(args):
         plt.ylabel('Input Dimension')
 
     # Subplot for the fc1 layer
-    plt.subplot(1, 3, 2)
     for i, heatmap in enumerate(heatmap_list_fc1):
+        plt.subplot(5, 5, 5+i+1)
         plt.imshow(heatmap, cmap='viridis', aspect='auto')
         plt.colorbar()
         plt.title(f'Step {500 * (i + 1)}')
@@ -302,8 +305,8 @@ def main(args):
         plt.ylabel('Input Dimension')
 
     # Subplot for the fc2 layer
-    plt.subplot(1, 3, 3)
     for i, heatmap in enumerate(heatmap_list_fc2):
+        plt.subplot(5, 5, 10+i+1)
         plt.imshow(heatmap, cmap='viridis', aspect='auto')
         plt.colorbar()
         plt.title(f'Step {500 * (i + 1)}')
