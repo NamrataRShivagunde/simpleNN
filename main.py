@@ -311,7 +311,7 @@ def main(args):
     plt.tight_layout()
 
     # Save the figure
-    plt.savefig('all_heatmaps_combined.png')
+    plt.savefig(f'all_heatmaps_combined_{add_lora}.png')
 
     # Show the figure (optional)
     plt.show()
